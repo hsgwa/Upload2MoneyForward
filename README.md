@@ -7,35 +7,34 @@ This program is to regsiter expenses and incomes data to MoneyForward by uploadi
 ## Features
 - regsiter expenses and income data to MoneyForward by uploading csv files 
 - You can use some parameter following:  
-  -date
-  -price(income and expense
-  -large-category  
-  -middle-category  
-  -content  
+  日付,大分類,中分類,備考,金額
 
 ## Requirement
 - Python 3.6.3 or later  
 - selenium 3.141 or later  
-- ChromeDriver 73.0.3683.103 or later
+- Chrome
+- ChromeDriver
+
 
 ## Usage
-1. You can install selenium using:  
-```pip install selenium```  
-  
-2. You can get ChromeDriver from the followng site:  
-http://chromedriver.chromium.org/downloads
+1. Install dependencies:  
 
-3. You need to move ChromeDriver to the same directory as Upload2MoneyForward.
+   ```shell
+   $ pip install selenium
+   $ # You can install proper version with following command.
+   $ pip install chromedriver-binary~=`google-chrome --version \
+    | perl -pe 's/([^0-9]+)([0-9]+\.[0-9]+).+/$2/g'`
+   ```
+2. Create .env file to set username and password.
 
-4. You need to modify the source about your account info.
-```
-user = "input your userid"
-password = "input your password"
-```
-
-5. Input file format
+   ```
+   $ cat .env
+   USERNAME="hoge@gmail.com"
+   PASSWORD='password'
+   ```
+3. Input file format
 This program only allow following CSV format:  
-```date,large-category,middle-category,content-field,price```  
+```日付,大分類,中分類,備考,金額```  
 You can see sample data from "sample.csv"
 
 ## Running Tests
@@ -43,7 +42,8 @@ You can execute this program using:
 ```python uploadCSVtoMF.py sample.csv```
 
 ## Author
-[yysosuke](https://twitter.com/yyosuke)
+- [yysosuke](https://twitter.com/yyosuke)
+- [hssay](https://twitter.com/a_hssay)
 
 ## License
 [GPL](https://github.com/yyosuke/Upload2MoneyForward/blob/master/LICENSE)

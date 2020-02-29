@@ -97,7 +97,8 @@ def doUpload(input_file):
                 elem.clear()
                 elem.send_keys(row[3])
 
-                #input date info elem = driver.find_element_by_id("updated-at")
+                #input date info
+                elem = driver.find_element_by_id("updated-at")
                 elem.clear()
                 elem.send_keys(row[0])
 

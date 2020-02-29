@@ -10,11 +10,23 @@ import csv
 import chromedriver_binary
 
 def doUpload(input_file):
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
 
     surl = "https://moneyforward.com/users/sign_in"
     iurl = "https://moneyforward.com/cf#cf_new"
-    user = "input your userid"
-    password = "input your password"
+    user = os.environ.get("USERNAME")
+    password = os.environ.get("PASSWORD")
+    print(user, password)
+
+    if user == None:
+      print('USERNAME is not set. Please create .env file to set login info.')
+      return
+
+    if password == None:
+      print('PASSWORD is not set. Please create .env file to set login info.')
+      return
 
     try:
         driver = webdriver.Chrome()

@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import csv
-
+import chromedriver_binary
 
 def doUpload(input_file):
 
@@ -17,7 +17,7 @@ def doUpload(input_file):
     password = "input your password"
 
     try:
-        driver = webdriver.Chrome('./bin/chromedriver')
+        driver = webdriver.Chrome()
         driver.implicitly_wait(10)
         driver.get(surl)
 

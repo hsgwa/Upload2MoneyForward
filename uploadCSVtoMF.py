@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import csv
+import pandas as pd
 import chromedriver_binary
 
 def doUpload(input_file):
@@ -44,78 +44,71 @@ def doUpload(input_file):
         elem.click()
 
         # open
-        f = open(input_file, mode='r', encoding='utf-8')
-        reader = csv.reader(f)
-        count = 1
         driver.get(iurl)
         element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "submit-button")))
-        for row in reader:
 
-            # header skip
-            if count != 1:
-                print(row)
-                if int(row[4]) > 0:
-                    # case of income
-                    print("[" + str(count) + "] " + "case of income : ")
-                    price = int(row[4])
+        df = pd.read_csv(input_file)
+        for count, row in df.iterrows():
+            if int(row['金額']) > 0:
+                # case of income
+                print("[" + str(count) + "] " + "case of income : ")
+                price = int(row['金額'])
 
-                    elem = driver.find_element_by_class_name(
-                        "plus-payment").click()
+                elem = driver.find_element_by_class_name(
+                    "plus-payment").click()
 
-                elif int(row[4]) < 0:
-                    # case of outgo
-                    print("[" + str(count) + "] " + "case of outgo : ")
-                    price = int(row[4])
+            elif int(row['金額']) < 0:
+                # case of outgo
+                print("[" + str(count) + "] " + "case of outgo : ")
+                price = int(row['金額'])
 
-                else:
-                    print("[" + str(count) + "] " + "Error format : ")
+            else:
+                print("[" + str(count) + "] " + "Error format : ")
 
-                #input price info
-                elem = driver.find_element_by_id("appendedPrependedInput")
-                elem.clear()
-                elem.send_keys(abs(int(row[4])))
+            #input price info
+            elem = driver.find_element_by_id("appendedPrependedInput")
+            elem.clear()
+            elem.send_keys(abs(int(row['金額'])))
 
-                #input large-category info
-                elem = driver.find_element_by_id(
-                    "js-large-category-selected").click()
-                sleep(1)
-                elem = driver.find_element_by_xpath(
-                    "//a[text()='" + row[1] +
-                    "' and @class='l_c_name']").click()
-                sleep(1)
-                #input middle-category info
-                elem = driver.find_element_by_id(
-                    "js-middle-category-selected").click()
-                sleep(1)
-                elem = driver.find_element_by_xpath(
-                    "//a[text()='" + row[2] +
-                    "' and @class='m_c_name']").click()
-                sleep(1)
-                #input content-field info
-                elem = driver.find_element_by_id("js-content-field")
-                elem.clear()
-                elem.send_keys(row[3])
+            #input large-category info
+            elem = driver.find_element_by_id(
+                "js-large-category-selected").click()
+            sleep(1)
+            elem = driver.find_element_by_xpath(
+                "//a[text()='" + row['大分類'] +
+                "' and @class='l_c_name']").click()
+            sleep(1)
+            #input middle-category info
+            elem = driver.find_element_by_id(
+                "js-middle-category-selected").click()
+            sleep(1)
+            elem = driver.find_element_by_xpath(
+                "//a[text()='" + row['中分類'] +
+                "' and @class='m_c_name']").click()
+            sleep(1)
+            #input content-field info
+            elem = driver.find_element_by_id("js-content-field")
+            elem.clear()
+            elem.send_keys(row['備考'])
 
-                #input date info
-                elem = driver.find_element_by_id("updated-at")
-                elem.clear()
-                elem.send_keys(row[0])
+            #input date info
+            elem = driver.find_element_by_id("updated-at")
+            elem.clear()
+            elem.send_keys(row['日付'])
 
-                #save
-                elem = driver.find_element_by_id("submit-button").click()
-                element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located(
-                        (By.ID, "confirmation-button")))
-                elem = driver.find_element_by_id("confirmation-button").click()
-                element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "submit-button")))
-                element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located(
-                        (By.CLASS_NAME, "plus-payment")))
+            #save
+            elem = driver.find_element_by_id("submit-button").click()
+            element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.ID, "confirmation-button")))
+            elem = driver.find_element_by_id("confirmation-button").click()
+            element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, "submit-button")))
+            element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.CLASS_NAME, "plus-payment")))
 
-            count += 1
-        f.close()
         print("End procedure of " + input_file)
         driver.quit()
 

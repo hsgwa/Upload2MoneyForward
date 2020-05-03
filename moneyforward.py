@@ -29,15 +29,32 @@ class WebController():
 
     def login(self):
         self.__driver.get("https://moneyforward.com/users/sign_in")
-        elem = self.__driver.find_element_by_id(
-            "sign_in_session_service_email")
+
+        elem = self.__driver.find_element_by_xpath(
+            '//a[contains(@href, "sign_in/email")]')
+        self.__driver.get(elem.get_attribute("href"))
+
+        # elem = self.__driver.find_element_by_id("login-btn-sumit")
+        # elem.click()
+
+        sleep(1)
+        elem = self.__driver.find_element_by_xpath(
+            '//input[@type="email"]')
         elem.clear()
         elem.send_keys(self.__username)
-        elem = self.__driver.find_element_by_id(
-            "sign_in_session_service_password")
+
+        elem = self.__driver.find_element_by_xpath(
+            '//input[@type="submit"]')
+        elem.click()
+        sleep(1)
+
+        elem = self.__driver.find_element_by_xpath(
+            '//input[@type="password"]')
         elem.clear()
         elem.send_keys(self.__password)
-        elem = self.__driver.find_element_by_id("login-btn-sumit")
+
+        elem = self.__driver.find_element_by_xpath(
+            '//input[@type="submit"]')
         elem.click()
 
     def open_payment(self):
@@ -136,6 +153,49 @@ class WebController():
             self.__driver.get(href)
 
 
+def doUploadDf(df):
+    import os
+    from time import sleep
+    import pandas as pd
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    user = os.environ.get("USERNAME")
+    password = os.environ.get("PASSWORD")
+
+    if user is None:
+        print('USERNAME is not set.\n'
+              'Please create .env file to set login info.')
+        return
+    else:
+        print("USERNAME : {}".format(user))
+
+    if password is None:
+        print('PASSWORD is not set.\n'
+              'Please create .env file to set login info.')
+        return
+    else:
+        print("PASSWORD : {}".format("*" * len(password)))
+
+    controller = WebController(user, password)
+
+    controller.login()
+    controller.open_payment()
+
+    for count, row in df.iterrows():
+        controller.fill_date(row['date'])
+        controller.fill_payment(int(row['payment']))
+        controller.select_large_category(row['major'])
+        controller.select_middle_category(row['middle'])
+        controller.fill_content(row['memo'])
+        sleep(2)
+        controller.save_payment()
+
+        if count < len(df):
+            controller.open_next_payment()
+
+    return 1
+
 def doUpload(input_file):
     import os
     from time import sleep
@@ -181,7 +241,7 @@ def doUpload(input_file):
     return 1
 
 
-def doDownload(input_file):
+def doDownload():
     import os
     from time import sleep
     # import pandas as pd
@@ -211,7 +271,7 @@ def doDownload(input_file):
     controller.getHistoryCSV()
 
 
-def doPaymentDownload(input_file):
+def doPaymentDownload():
     import os
     from time import sleep
     # import pandas as pd
@@ -249,5 +309,5 @@ if __name__ == '__main__':
     #     sys.exit()
     # input_file = str(sys.argv[1])
     # sys.exit(doUpload(input_file))
-    sys.exit(doDownload(""))
-    # sys.exit(doPaymentDownload(""))
+    # sys.exit(doDownload())
+    sys.exit(doPaymentDownload())
